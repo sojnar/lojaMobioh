@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+    apploja:
+        image: 'sojnar/mobioh-nginx:1.0.1'
+        container_name: apploja-client01
+        ports:
+            - 8080:80
+        networks:
+            - client01
+        depends_on:
+            - dbloja
+        volumes:
+            - /clientes/nginx/conf.d:/etc/nginx/conf.d
+            - /clientes/nginx/www/mobioh:/var/www/html/mobioh
+            - /clientes/nginx/mobioh:/mobioh
+    
+    dbloja:
+        image: sojnar/mogioh-postgres:1.0.0
+        container_name: dbloja-client01
+        volumes:
+            - /clientes/postgres:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        networks:
+            - client01
+    
+networks: 
+    client01:
+        driver: bridge

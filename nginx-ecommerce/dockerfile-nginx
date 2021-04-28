@@ -1,0 +1,25 @@
+FROM nginx
+
+RUN \ 
+    mkdir -p  /etc/letsencrypt/live/keystore
+
+COPY keystore.p12 /etc/letsencrypt/live/keystore
+COPY certbot.sh /opt/
+COPY lojaservice /etc/init.d/
+
+RUN \
+    chmod +x /opt/certbot.sh && \
+    chmod +x /etc/init.d/lojaservice && \
+    cd /etc/init.d && \
+    update-rc.d lojaservice defaults 10 03 && \
+    update-rc.d lojaservice start 3 && \
+    update-rc.d lojaservice enable 3
+
+RUN \
+    apt update && \
+      apt install -y certbot \
+      python3-certbot-nginx \ 
+      inetutils-ping \
+      net-tools 
+
+ENTRYPOINT ["/etc/init.d/lojaservice"]

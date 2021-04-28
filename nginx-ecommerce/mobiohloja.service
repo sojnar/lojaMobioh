@@ -1,0 +1,11 @@
+[Unit]
+Description = deamon ambevservice
+After = network.target
+
+[Service]
+ExecStart = /mobioh/programas/service/lojaservice start
+ExecStop = /mobioh/programas/service/lojaservice stop
+
+[Install]
+WantedBy = multi-user.target
+

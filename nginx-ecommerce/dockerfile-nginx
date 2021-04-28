@@ -6,10 +6,12 @@ RUN \
 COPY keystore.p12 /etc/letsencrypt/live/keystore
 COPY certbot.sh /opt/
 COPY lojaservice /etc/init.d/
+COPY lojaservice /docker-entrypoint.d/lojaservice.sh
 
 RUN \
     chmod +x /opt/certbot.sh && \
     chmod +x /etc/init.d/lojaservice && \
+    chmod +x /docker-entrypoint.d/* && \
     cd /etc/init.d && \
     update-rc.d lojaservice defaults 10 03 && \
     update-rc.d lojaservice start 3 && \
@@ -20,6 +22,5 @@ RUN \
       apt install -y certbot \
       python3-certbot-nginx \ 
       inetutils-ping \
-      net-tools 
-
-ENTRYPOINT ["/etc/init.d/lojaservice"]
+      net-tools \
+      htop

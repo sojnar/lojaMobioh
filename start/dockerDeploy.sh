@@ -47,7 +47,7 @@ deployNginxMobioh(){
         -p ${portNginx}:80 -v /infra/$readClient/nginx/mobioh:/mobioh \
         -v /infra/$readClient/nginx/www/mobioh:/var/www/html/mobioh \
         -v /infra/${readClient}/nginx/conf.d:/etc/nginx/conf.d \
-        sojnar/mobioh-nginx:1.0.8
+        sojnar/mobioh-nginx:1.0.12
 }
 
 changeTagNetwork(){
@@ -63,9 +63,9 @@ changeTagNetwork(){
     sed -i "s|"$portNginx"|"$somaPortNginx"|g" dockerDeploy.sh
 }
 
-networkDefintion='172.58.0.'
-portPostgres='5440'
-portNginx='8088'
+networkDefintion='172.61.0.'
+portPostgres='5443'
+portNginx='8091'
 read -p "Digite o nome do cliente: " readClient
 
 read -p "Digite 'y' para criar o ambiente do cliente: ($readClient) ou 'n' para sair: " validInfra

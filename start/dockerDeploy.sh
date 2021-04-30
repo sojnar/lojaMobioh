@@ -3,15 +3,29 @@
 
 pullPacketNginx(){
     # Verifica se wget esta instalado
-    if [ !-f /tmp/nginxPacket-1.0.0.tgz ]
+    urlPacketNginx=https://gpmobiohdiag.blob.core.windows.net/mobioh-nginx/mobioh-nginx-1.0.0.tgz
+    urlPacketImages=https://gpmobiohdiag.blob.core.windows.net/mobioh-nginx/mobioh-images-1.0.0.tgz
+    urlPacketBackend=https://gpmobiohdiag.blob.core.windows.net/mobioh-nginx/mobioh-backend-1.0.0.tgz
+    urlPacketConfd=https://gpmobiohdiag.blob.core.windows.net/mobioh-nginx/mobioh-conf-nginx-1.0.0.tgz
+    
+    if [ -f /tmp/mobioh-nginx-1.0.1.tgz ]
     then
-        urlPacketNginx=https://gpmobiohdiag.blob.core.windows.net/mobioh-nginx/nginxPacket-1.0.0.tgz
+        tar -zxvf /tmp/mobioh-backend-1.0.0.tgz -C /infra/$readClient/nginx/
+        tar -zxvf /tmp/mobioh-images-1.0.0.tgz -C /infra/webMobioh/nginx/www/
+        tar -zxvf /tmp/mobioh-conf-nginx-1.0.0.tgz -C /infra/$readClient/nginx/
+        tar -zxvf /tmp/mobioh-nginx-1.0.0.tgz -C /infra/$readClient/nginx/www/
+    else   
         yum update && yum install wget -y
-        wget $urlPacketNginx -O /tmp/nginxPacket-1.0.0.tgz
-        tar -zxvf /tmp/nginxPacket-1.0.0.tgz -C /infra/$readClient/nginx/
+        wget $urlPacketNginx -O /tmp/mobioh-nginx-1.0.0.tgz
+        wget $urlPacketImages -O /tmp/mobioh-images-1.0.0.tgz
+        wget $urlPacketBackend -O /tmp/mobioh-backend-1.0.0.tgz
+        wget $urlPacketConfd -O /tmp/mobioh-conf-nginx-1.0.0.tgz
+        
+        tar -zxvf /tmp/mobioh-images-1.0.0.tgz -C /infra/webMobioh/nginx/www/
+        tar -zxvf /tmp/mobioh-backend-1.0.0.tgz -C /infra/$readClient/nginx/
+        tar -zxvf /tmp/mobioh-conf-nginx-1.0.0.tgz -C /infra/$readClient/nginx/www/
+        tar -zxvf /tmp/mobioh-nginx-1.0.0.tgz -C /infra/$readClient/nginx/www/
         clean
-    else
-        tar -zxvf /tmp/nginxPacket-1.0.0.tgz -C /infra/$readClient/nginx/
     fi
 }
 
@@ -34,7 +48,7 @@ createDockerNetwork(){
 
 deployPostgresqlMobioh(){
     docker run -d --ip ${networkDefintion}2 \
-        --name ${readClient}-dbloja -p ${portPostgres}:5432 \
+        --name ${readClient}-dbloja -p ${portPostgres}:5439 \
         --network ${createNameNetwork} \
         -v /infra/${readClient}/postgresql:/var/lib/postgresql/data \
         sojnar/mobioh-postgres:1.0.1
@@ -45,7 +59,9 @@ deployNginxMobioh(){
         --ip ${networkDefintion}3 --name ${readClient}-webloja \
         --network ${createNameNetwork} \
         -p ${portNginx}:80 -v /infra/$readClient/nginx/mobioh:/mobioh \
-        -v /infra/$readClient/nginx/www/mobioh:/var/www/html/mobioh \
+        -v /infra/$readClient/nginx/www:/var/www/html/mobioh \
+        -v /infra/webMobioh/nginx/www/sp:/var/www/html/mobioh/imgs/sp \
+        -v /infra/webMobioh/nginx/www/mb:/var/www/html/mobioh/imgs/mb \
         -v /infra/${readClient}/nginx/conf.d:/etc/nginx/conf.d \
         sojnar/mobioh-nginx:1.0.12
 }
@@ -63,17 +79,17 @@ changeTagNetwork(){
     sed -i "s|"$portNginx"|"$somaPortNginx"|g" dockerDeploy.sh
 }
 
-networkDefintion='172.61.0.'
-portPostgres='5443'
-portNginx='8091'
+networkDefintion='172.57.0.'
+portPostgres='5439'
+portNginx='8087'
 read -p "Digite o nome do cliente: " readClient
 
 read -p "Digite 'y' para criar o ambiente do cliente: ($readClient) ou 'n' para sair: " validInfra
 
 if [ "$validInfra" == "y" ] || [ "$validInfra" == "Y" ]
 then
-    mkdir -p /infra/${readClient}/{nginx,postgresql}
-    #mkdir -p /infra/webMobioh/nginx/www/mobioh/imgs/{sp,mb}
+    mkdir -p /infra/${readClient}/{nginx/www,postgresql}
+    mkdir -p /infra/webMobioh/nginx/www/imgs/{sp,mb}
     pullPacketNginx
     configVirtualHost
     createDockerNetwork ${networkDefintion} ${readClient}

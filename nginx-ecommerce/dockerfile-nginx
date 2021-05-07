@@ -24,3 +24,5 @@ RUN \
       inetutils-ping \
       net-tools \
       htop
+    
+EXPOSE 80/TCP 443/TCP

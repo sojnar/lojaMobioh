@@ -61,7 +61,7 @@ createDockerNetwork(){
 
 deployPostgresqlMobioh(){
     docker run -d --ip ${networkDefintion}2 \
-        --name ${readClient}-dbloja -p ${portPostgres}:5443 \
+        --name ${readClient}-dbloja -p ${portPostgres}:5432 \
         --network ${createNameNetwork} \
         -v /infra/${readClient}/postgresql:/var/lib/postgresql/data \
         sojnar/mobioh-postgres:1.0.1

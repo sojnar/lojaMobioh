@@ -89,8 +89,8 @@ changeTagNetwork(){
     sed -i "s|"$portPostgres"|"$somaPortPostgres"|g" dockerDeploy.sh
 }
 
-networkDefintion='172.61.0.'
-portPostgres='5443'
+networkDefintion='172.50.0.'
+portPostgres='5433'
 read -p "Digite o nome do cliente: " readClient
 
 read -p "Digite 'y' para criar o ambiente do cliente: ($readClient) ou 'n' para sair: " validInfra

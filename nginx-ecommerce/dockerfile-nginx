@@ -25,4 +25,4 @@ RUN \
       net-tools \
       htop
     
-EXPOSE 80/TCP 443/TCP
+EXPOSE 80/TCP 443/TCP 8586/TCP

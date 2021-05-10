@@ -76,7 +76,8 @@ deployNginxMobioh(){
         -v /infra/webMobioh/nginx/www/sp:/var/www/html/mobioh/imgs/sp \
         -v /infra/webMobioh/nginx/www/mb:/var/www/html/mobioh/imgs/mb \
         -v /infra/${readClient}/nginx/conf.d:/etc/nginx/conf.d \
-        sojnar/mobioh-nginx:1.0.13
+        -v /infra/${readClient}/nginx/letsencrypt:/etc/letsencrypt \
+        sojnar/mobioh-nginx:1.0.14
 }
 
 changeTagNetwork(){
@@ -97,7 +98,7 @@ read -p "Digite 'y' para criar o ambiente do cliente: ($readClient) ou 'n' para 
 
 if [ "$validInfra" == "y" ] || [ "$validInfra" == "Y" ]
 then
-    mkdir -p /infra/${readClient}/{nginx/www,postgresql}
+    mkdir -p /infra/${readClient}/{nginx/{www,letsencrypt},postgresql}
     mkdir -p /infra/webMobioh/nginx/www/imgs/{sp,mb}
     pullPacketNginx
     configVirtualHost
